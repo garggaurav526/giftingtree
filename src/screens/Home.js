@@ -9,6 +9,7 @@ import ChocolateImage from '../assets/img/chocolate.jpeg'
 import FlowerImage from '../assets/img/flower.jpeg'
 import GiftingImage from '../assets/img/gifting.jpeg'
 import GiftsImage from '../assets/img/gifts.jpeg'
+import Header from "../components/Header";
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
@@ -30,6 +31,7 @@ export default function Home({navigation}) {
 
     return (
         <>
+        <Header navigation={navigation}/>
             <ScrollView style={styles.main}>
                 <View style={styles.loginMain}>
                     <View style={styles.submain}>

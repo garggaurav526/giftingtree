@@ -6,12 +6,14 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import CustomButton from '../components/CustomButton';
 import { authServices } from "../components/Services/Auth";
 import Loader from '../components/Sys/Loader'
+import { AuthContext } from '../components/Context'
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
 const vh = Dimensions.get('window').height / 100;
 
 export default function Login({ navigation }) {
+    const { signIn } = React.useContext(AuthContext)
     const [emailOrPhone, setEmailOrPhone] = React.useState("")
     const [password, setPassword] = React.useState("")
     const [errorEmail, setErrorEmail] = React.useState("")
@@ -20,6 +22,7 @@ export default function Login({ navigation }) {
 
 
     const login = () => {
+        signIn()
         if (!emailOrPhone) {
             setErrorEmail("Please enter email")
         }
@@ -64,7 +67,6 @@ export default function Login({ navigation }) {
 
     return (
         <ScrollView style={styles.main}>
-
             {isLoader &&
                 <Loader />
             }
@@ -90,24 +92,23 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
     loginMain: {
+        height: vh * 90,
         width: width,
-        height: height,
-        flexDirection: 'row',
-        justifyContent: 'center'
     },
     submain: {
-        width: vw * 90,
-        height: height,
+        // width: vw * 90,
+        marginHorizontal:vw*5,
+        height: '100%',
         flexDirection: 'column',
         justifyContent: 'center',
-        position: 'relative'
+        // position: 'relative'
     },
     signTxt: {
         color: "#aaa"
     },
     main: {
         backgroundColor: '#fff',
-        height: height,
+        // height: height,
         width: width,
     },
 })

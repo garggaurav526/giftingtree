@@ -17,7 +17,7 @@ export default function BottomBar(props) {
 
     return (
         <View style={styles.bottomNav}>
-            <View style={{ width: vw * 75 }}>
+            <View style={{ width: vw * 90 }}>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity onPress={()=>navigateSceen('Home')} style={styles.iconBox}>
                         <Icon name={props.active  ==="Home" ? "ios-home" :"ios-home-outline" } size={30} style={{textAlign:'center'}} color={props.active=="Home"?'#00BFA5':'#000'} />
@@ -36,6 +36,11 @@ export default function BottomBar(props) {
 
                     <TouchableOpacity onPress={()=>navigateSceen('Home')} style={styles.iconBox}>
                         <Icon name={props.active  ==="Cart" ? "ios-cart" :"ios-cart-outline" } size={30} style={{textAlign:'center'}} color={props.active=="Cart"?'#00BFA5':'#000'} />
+                        <Text style={{textAlign: "center",color:props.active=="Cart"?'#00BFA5':'#000'}}>Cart</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={()=>navigateSceen('Home')} style={styles.iconBox}>
+                        <Icon name={props.active  ==="Cart" ? "person" :"person-outline" } size={30} style={{textAlign:'center'}} color={props.active=="Cart"?'#00BFA5':'#000'} />
                         <Text style={{textAlign: "center",color:props.active=="Cart"?'#00BFA5':'#000'}}>Cart</Text>
                     </TouchableOpacity>
                 </View>

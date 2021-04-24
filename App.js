@@ -1,9 +1,18 @@
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack'
-import React, { Component, useEffect } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { View, Text, StatusBar, Dimensions, Image, Button, TouchableOpacity } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import Icon from 'react-native-vector-icons/Ionicons';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+
+import { AuthContext } from "./src/components/Context";
+import Header from './src/components/Header'
+
+
 import Login from './src/screens/Login'
 import SignUp from './src/screens/SignUp'
 import Home from './src/screens/Home'
@@ -11,128 +20,109 @@ import HeaderOption from './src/components/HeaderOption';
 import CategoryItemView from './src/screens/CategoryItemView';
 import ProductListing from './src/screens/ProductListing';
 import ProductDetail from './src/screens/ProductDetail';
-// import ProductView from './src/component/screen/ProductView'
-// import Cart from './src/component/screen/Cart'
-// import Notifications from './src/component/screen/Notifications'
-// import Profile from './src/component/screen/Profile'
-// import Orders from './src/component/screen/Orders'
-// import ForgetPassword from './src/component/screen/ForgetPassword'
-// import Location from './src/component/screen/Location'
-// import Category from './src/component/screen/Category'
-// import Address from './src/component/screen/Address'
+import Logout from './src/screens/Logout';
 
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
 const vh = Dimensions.get('window').height / 100;
 
-// const Main = () => {
-//   return (
-//     <NavigationContainer>
-//       <Index />
-//     </NavigationContainer>
-//   );
-// };
-const headerOption = () => {
-  //   const logOut = async () => {
-  //     Alert.alert(
-  //         "Logout",
-  //         "Are you sure want to logout ?",
-  //         [
-  //             {
-  //                 text: "No",
-  //                 onPress: () => console.log("Cancel Pressed"),
-  //                 style: "cancel"
-  //             },
-  //             { text: "Yes", onPress: () => confirmLogout() }
-  //         ],
-  //         { cancelable: false }
-  //     );
-  // }
+const AuthStack = createStackNavigator();
+const Tabs = createBottomTabNavigator();
+const HomeStack = createStackNavigator();
+const Auth = createStackNavigator();
+const ProfileStack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+const HomeDrawer = createDrawerNavigator();
 
-  const logOut = async () => {
-      try {
-          await AsyncStorage.removeItem('giftingTreeSSoToken')
-          navigation.navigate("Login")
-      } catch (e) {
-          // remove error
-      }
+class LogoTitle extends React.Component {
+  render() {
+    return (<View style={{ width: '100%' }}>
+      <Image
+        source={require('./src/assets/img/GiftingTreeLogo.png')}
+        style={{ height: 50, width: '100%', resizeMode: 'contain' }}
+      /></View>
+    );
   }
-  return <View>
-          <TouchableOpacity onPress={() => logOut()}>
-            <Text style={{ color: "#000" }}>Logout</Text>
-          </TouchableOpacity>
-        </View>
 }
 
-const AppStack = createStackNavigator(
-  {
-    Home: Home,
-    CategoryItemView: CategoryItemView,
-    ProductListing: ProductListing,
-    ProductDetail: ProductDetail,
-    // Profile: Profile,
-    // Orders: Orders,
-    // Location: Location,
-    // Category: Category,
-    // Address:Address,
-  },
-  {
-    defaultNavigationOptions: {
-      title: headerOption(),
-      headerShown: true
+
+const HomeStackScreen = () => {
+  return (
+    <HomeStack.Navigator initialRouteName="Home">
+      <HomeStack.Screen
+        name="Home" component={Home}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="CategoryItemView" component={CategoryItemView}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="ProductListing" component={ProductListing}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="ProductDetail" component={ProductDetail}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </HomeStack.Navigator>
+  )
+}
+
+const HomeDrawerScreen = () => {
+  return (
+    <HomeDrawer.Navigator>
+      <HomeDrawer.Screen
+        name="ProductDetail" component={ProductDetail}
+        options={
+          {
+            drawerLabel: "Product Detail",
+            drawerIcon: ({ tintColor }) => <Icon name={'heart'} size={30} color={tintColor} />
+          }
+        }
+      />
+    </HomeDrawer.Navigator>
+  )
+}
+
+export default (props) => {
+  const [isLoading, setLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
+
+  const authContext = React.useMemo(() => {
+    return {
+      signIn: () => {
+        setLoading(false);
+        setUserToken('asdf');
+      },
+      signUp: () => {
+        setLoading(false);
+        setUserToken('asdf');
+      },
+      signOut: () => {
+        setLoading(false);
+        setUserToken(null);
+      }
     }
-  }
-);
-const AuthStack = createStackNavigator(
-  { 
-    Login: Login, 
-    SignUp: SignUp, 
-    // ForgetPassword: ForgetPassword
-  },
-  {
-    defaultNavigationOptions: {
-      title: '',
-      headerShown: false
-    }
-  }
-);
-
-const navigator = createSwitchNavigator(
-  {
-    AuthLoading: App,
-    App: AppStack,
-    Auth: AuthStack,
-  },
-  {
-    initialRouteName: 'AuthLoading',
-  }
-);
-
-
-function App({ navigation }) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      getToken();
-    }, 1000);
-    return () => clearTimeout(timer);
   }, []);
 
-  const getToken = async () => {
-    try {
-      const value = await AsyncStorage.getItem('giftingTreeSSoToken')
-      if (value !== null) {
-        navigation.navigate("Home")
-      } else {
-        navigation.navigate("Login")
-      }
-    } catch (e) {
-      navigation.navigate("Login")
-    }
-  }
+  React.useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
-  return (
-    <View>
+  if (isLoading) {
+    return <View>
       <StatusBar translucent backgroundColor='transparent' />
       <View style={{ height: height, width: width, position: 'relative' }}>
         <Image
@@ -140,8 +130,57 @@ function App({ navigation }) {
           source={require('./src/assets/img/GiftingTreeLogo.png')}
         />
       </View>
-    </View>
-  );
-}
+    </View>;
+  }
 
-export default createAppContainer(navigator);
+  return (
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        {!userToken ? (
+          <Auth.Navigator>
+            <Auth.Screen name="Login" component={Login}
+              options={{
+                headerShown: false,
+                headerTitle: props => <LogoTitle {...props} />,
+                headerStyle: {
+                  backgroundColor: '#6C0AC7',
+                },
+              }}
+            />
+            <Auth.Screen name="SignUp" component={SignUp}
+              options={{
+                headerShown: false,
+                headerTitle: props => <LogoTitle {...props} />,
+                headerStyle: {
+                  backgroundColor: '#6C0AC7',
+                },
+              }}
+            />
+          </Auth.Navigator>
+        ) : (
+          <Drawer.Navigator drawerContent={props => <Logout {...props} />}>
+            <Drawer.Screen name="Shop" component={HomeStackScreen}
+              options={
+                {
+                  drawerLabel: "Shop",
+                  drawerIcon: ({ tintColor }) => <Icon name={'home'} size={30} color={tintColor} />
+                }
+              }
+            />
+          </Drawer.Navigator>
+          // <Auth.Navigator>
+          //   <Auth.Screen name="Home" component={HomeStackScreen}
+          //     options={{
+          //       headerTitle: props => <Header value={props} />,
+          //       headerShown: false,
+          //       headerStyle: {
+          //         backgroundColor: '#6C0AC7',
+          //       },
+          //     }}
+          //   />
+          // </Auth.Navigator>
+        )}
+      </NavigationContainer>
+    </AuthContext.Provider>
+  )
+}

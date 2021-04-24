@@ -15,6 +15,7 @@ import ImageSliderComponent from "../components/ImageSlider/ImageSliderComponent
 // import { HomeServices } from "../components/Services/Home.services";
 import BackgroundHeading from '../components/BackgroundHeading';
 import BottomBar from "../components/BottomBar";
+import Header from "../components/Header";
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
@@ -94,6 +95,7 @@ function CategoryItemView(props) {
 
     return (
         <>
+        <Header navigation={props.navigation}/>
             <ScrollView style={styles.main}>
                 <View style={styles.loginMain}>
                     <View style={styles.submain}>
