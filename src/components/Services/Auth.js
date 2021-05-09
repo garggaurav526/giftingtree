@@ -9,7 +9,6 @@ export const authServices = {
 };
 
 function userLogin(email, password) {
-    alert("here")
     var formdata = new FormData();
     formdata.append("email", email);
     formdata.append("password", password);
@@ -18,7 +17,6 @@ function userLogin(email, password) {
         body: formdata,
         redirect: 'follow'
     };
-    console.log('requestOptions', requestOptions);
     return fetch(apiUrl+"api/auth/login", requestOptions)
         .then(handleResponse)
         .then(user => {
@@ -31,13 +29,11 @@ function userSignUp(name, phone, email,password) {
     formdata.append("phone", phone);
     formdata.append("email", email);
     formdata.append("password", password);
-    
     var requestOptions = {
       method: 'POST',
       body: formdata,
       redirect: 'follow'
     };
-    
     return fetch(apiUrl+"api/auth/signup", requestOptions)
         .then(handleResponse)
         .then(user => {

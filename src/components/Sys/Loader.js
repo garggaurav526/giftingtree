@@ -7,7 +7,7 @@ export default function Loader() {
     return (
         <View style={styles.main} >
             <View style={{position:'relative'}}>
-                <ActivityIndicator size="large" style={styles.loader} color="#f04c4c" />
+                <ActivityIndicator size="large" style={styles.loader} color="#00BFA5" />
             </View>
         </View>
     )
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
         zIndex: 9999,
         height: "100%",
         width: "100%",
-        backgroundColor: 'rgba(0, 0, 0, 0.3)'
-    },
+        backgroundColor: 'rgba(0, 0, 0, 0.8)'
+    },  
     loader:{
         position:'absolute',
         top:vh * 45,

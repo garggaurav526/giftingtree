@@ -1,69 +1,158 @@
-import React, { useRef, useState } from "react";
+import React, {  useState, useEffect } from "react";
 import { Button, StyleSheet, Text, View, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import CustomButton from "../components/CustomButton";
 import BottomBar from "../components/BottomBar";
-import DrawerMenu from "../components/DrawerMenu";
-import MugImage from '../assets/img/mug.jpeg';
-import ChocolateImage from '../assets/img/chocolate.jpeg'
-import FlowerImage from '../assets/img/flower.jpeg'
-import GiftingImage from '../assets/img/gifting.jpeg'
-import GiftsImage from '../assets/img/gifts.jpeg'
 import Header from "../components/Header";
+import { HomeServices } from "../components/Services/Home.services";
+import Carousel from 'react-native-snap-carousel';
+import ImageSliderComponent from "../components/ImageSlider/ImageSliderComponent";
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
 const vh = Dimensions.get('window').height / 100;
 
-export default function Home({navigation}) {
+const homeServices = new HomeServices()
 
-    const drawer = useRef(null);
-    const [drawerPosition, setDrawerPosition] = useState("left");
+export default function Home({ navigation }) {
 
-    const handleClickCategory = (type) =>{
+    const [categoryList, setCategoryList] = useState([])
+    const [categoryListImage, setCategoryListImage] = useState([])
+
+    const handleClickCategory = (id, name) => {
         navigation.navigate("CategoryItemView", {
             navigationData: {
-                categoryName: type
+                categoryId: id,
+                categoryName: name
             },
         });
+    }
+
+    useEffect(() => {
+        getCategoryWithSubCategoryList();
+    }, [navigation]);
+
+    const getCategoryWithSubCategoryList = async () => {
+        await homeServices.getCategoryWithSubCategoryList().then(
+            (data) => {
+                setCategoryList(data.data.data.data)
+                var tempArr=[]
+                if(data.data.data.data.length>0){
+                    data.data.data.data.map((item) => {
+                        tempArr.push(item.image)
+                    })
+                    setCategoryListImage([...tempArr])
+                }
+                
+            },
+            (error) => {
+                console.log("error.response.status", error);
+            }
+        );
+    }
+
+    const handleClickSubCategory = (id) => {
+        navigation.navigate("ProductListing", {
+            navigationData: {
+                subCategoryID: id
+            },
+        });
+    }
+
+    const _renderItem = ({item, index}) => {
+        return (
+            <TouchableOpacity onPress={() => handleClickSubCategory(item.id)}  >
+                <View style={styles.slide}>
+                    <Image source={{ uri: item.image }} style={styles.imgStyle} />
+                    <View style={styles.textSubCategory}>
+                        <Text style={styles.titleSub}>{ item.name }</Text>
+                        <Text style={styles. descriptionSub} >{item.description}</Text>
+
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
     }
 
 
     return (
         <>
-        <Header navigation={navigation}/>
+            <Header navigation={navigation} />
             <ScrollView style={styles.main}>
                 <View style={styles.loginMain}>
                     <View style={styles.submain}>
                         <View>
-                            <Text style={styles.homePageHeader} >
+                            {/* <Text style={styles.homePageHeader} >
                                 Gifting Category
                             </Text>
                             <View style={styles.btnMainBox}>
-                                <CustomButton btnStyle={styles.btnCategory} text="Frames" />
-                                <CustomButton btnStyle={styles.btnCategory} text="FootWear" />
-                                <CustomButton btnStyle={styles.btnCategory} text="Earphone" />
-                                <CustomButton btnStyle={styles.btnCategory} text="Watches" />
-                                <CustomButton btnStyle={styles.btnCategory} text="Gifting Boxes" />
-                                <CustomButton btnStyle={styles.btnCategory} text="Mugs" />
-                            </View>
-                            <View style={styles.imgBox}>
-                                <TouchableOpacity onPress={() => handleClickCategory("Mug")}  >
-                                    <Image source={MugImage} style={styles.imgStyle} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleClickCategory("Chocolate")}  >
-                                    <Image source={ChocolateImage} style={styles.imgStyle} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleClickCategory("Flower")}  >
-                                    <Image source={FlowerImage} style={styles.imgStyle} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleClickCategory("Gifting")}  >
-                                    <Image source={GiftingImage} style={styles.imgStyle} />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleClickCategory("Gifts")}  >
-                                    <Image source={GiftsImage} style={styles.imgStyle} />
-                                </TouchableOpacity>
+                                {
+                                    categoryList.length > 0 &&
+                                    categoryList.map((item) => {
+                                        return <>
+                                            <CustomButton btnStyle={styles.btnCategory} text={item.name} onClick={() => handleClickCategory(item.id, item.name)} />
 
+                                        </>
+                                    })
+                                }
+                            </View> */}
+                            <View>
+                                <ImageSliderComponent
+                                    isButton={true}
+                                    height={vh * 35}
+                                    images={categoryListImage}
+                                />
+                            </View>
+                            
+                            <View style={styles.imgBox}>
+                                {
+                                    categoryList.length > 0 &&
+                                    categoryList.map((item) => {
+                                        return <>
+                                            {/* <TouchableOpacity onPress={() => handleClickCategory(item.id, item.name)}  >
+                                                <Image source={{ uri: item.image }} style={styles.imgStyle} />
+                                            </TouchableOpacity> */}
+                                            <View style={{marginBottom: 20, backgroundColor: "#ebebeb52", paddingBottom: 20, paddingTop: 20}}>
+                                                <View style={styles.categoryStyle}>
+                                                    <Text style={styles.categoryNameTitle}>{item.name}</Text>
+                                                    
+                                                    <View style={{flexDirection: "column", justifyContent:"center"}}>
+                                                        <CustomButton marginTop = {"none"} btnStyle={styles.btnSeeAll} text={
+                                                            item.sub_categories.length>0 ? "View All" : "View"
+                                                        } onClick={() => handleClickCategory(item.id, item.name)} />
+                                                    </View>
+                                                    
+                                                </View>
+                                                <View>
+                                                    {
+                                                        item.sub_categories.length>0 ?
+                                                        <Carousel
+                                                            // ref={(c) => { this._carousel = c; }}
+                                                            loop={true}
+                                                            loopClonesPerSide={10}
+                                                            data={item.sub_categories}
+                                                            renderItem={_renderItem}
+                                                            sliderWidth={width}
+                                                            layout={'default'}
+                                                            itemWidth={vw*60}
+                                                            
+                                                        />
+                                                        :
+                                                        <View style={{
+                                                            paddingHorizontal: 10
+                                                        }}>
+
+                                                        <TouchableOpacity onPress={() => handleClickCategory(item.id, item.name)}  >
+                                                            <Image source={{ uri: item.image }} style={[styles.imgStyle, {borderRadius: 7, borderBottomLeftRadius: 7, borderBottomRightRadius: 7}]} />
+                                                        </TouchableOpacity> 
+                                                        </View>
+                                                    }
+                                                    
+                                                </View>
+                                            </View>
+                                        </>
+                                    })
+                                }
                             </View>
                         </View>
                     </View>
@@ -115,11 +204,21 @@ const styles = StyleSheet.create({
         paddingTop: 3,
         paddingBottom: 3,
     },
+    btnSeeAll:{
+        width: vw*25,  
+        color: "#00BFA5",
+        backgroundColor: "#fff",
+        borderWidth: 1,
+        borderColor: "#00BFA5",
+        padding: 8,
+        borderRadius: 5,
+        margin: 0
+    },
     main: {
         backgroundColor: '#fff',
         height: height,
         width: width,
-        position:'relative',
+        position: 'relative',
     },
     imgBox: {
         marginTop: 30
@@ -135,7 +234,49 @@ const styles = StyleSheet.create({
     imgStyle: {
         width: "100%",
         borderRadius: 3,
-        marginTop: 25
-
+        marginTop: 25,
+        height: 200,
+        borderColor: "#ddd",
+        borderWidth: 1,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0
+    },
+    titleSub:{
+        textAlign: "center",
+        color: "#fff",
+        fontSize: RFPercentage(3)
+    },
+    descriptionSub: {
+        textAlign: "center",
+        color: "#fff"
+    },
+    textSubCategory:{
+        backgroundColor: "#00BFA5",
+        color: "#fff",
+        padding: 10,
+        borderRadius: 3,
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0
+    },
+    slide:{
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.30,
+        shadowRadius: 4.65,
+        
+        elevation: 15,
+    },
+    categoryNameTitle: {
+        fontSize: RFPercentage(3),
+        borderBottomWidth: 2,
+        borderBottomColor: "#00BFA5"
+    },
+    categoryStyle:{
+        flexDirection: "row",
+        paddingHorizontal: 10,
+        justifyContent: "space-between",
     }
 });

@@ -7,6 +7,7 @@ import CustomButton from '../components/CustomButton';
 import { authServices } from "../components/Services/Auth";
 import Loader from '../components/Sys/Loader'
 import { AuthContext } from '../components/Context'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
@@ -22,7 +23,6 @@ export default function Login({ navigation }) {
 
 
     const login = () => {
-        signIn()
         if (!emailOrPhone) {
             setErrorEmail("Please enter email")
         }
@@ -32,18 +32,17 @@ export default function Login({ navigation }) {
 
         if (emailOrPhone && password) {
             // if (password.length > 6) {
-                // setIasLoader(true);
+                setIasLoader(true);
 
                 authServices.userLogin(emailOrPhone, password)
                     .then(async (data) => {
-                        alert("asdsadas");
-                        if (data.success) {
+                        if (data.data.success) {
                             setIasLoader(false);
-                            console.log("dataapi_token", data)
-                            if (data && data.api_token ) {
+                            if (data.data.data.access_token ) {
+
                                 try {
-                                    await AsyncStorage.setItem("giftingTreeSSoToken", data.api_token);
-                                    navigation.navigate('Home')
+                                    await AsyncStorage.setItem("giftingTreeSSoToken", data.data.data.access_token);
+                                    signIn()
                                 } catch (e) {
                                     // setErrorMesg("Something went wrong !!! ")
                                     // saving error
@@ -51,7 +50,7 @@ export default function Login({ navigation }) {
                             }
                         } else {
                             setIasLoader(false);
-                            // setErrorMesg("Email or Password is wrong !!!")
+                            console.log("Email or Password is wrong !!!")
                         }
                     })
                     .catch(function (error) {

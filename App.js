@@ -21,6 +21,9 @@ import CategoryItemView from './src/screens/CategoryItemView';
 import ProductListing from './src/screens/ProductListing';
 import ProductDetail from './src/screens/ProductDetail';
 import Logout from './src/screens/Logout';
+import WishList from './src/screens/WishList';
+import UserProfile from './src/screens/UserProfile';
+import EditProfile from './src/screens/EditProfile';
 
 
 const { width, height } = Dimensions.get('window');
@@ -63,6 +66,18 @@ const HomeStackScreen = () => {
         }}
       />
       <HomeStack.Screen
+        name="WishList" component={WishList}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="UserProfile" component={UserProfile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
         name="ProductListing" component={ProductListing}
         options={{
           headerShown: false,
@@ -70,6 +85,12 @@ const HomeStackScreen = () => {
       />
       <HomeStack.Screen
         name="ProductDetail" component={ProductDetail}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="EditProfile" component={EditProfile}
         options={{
           headerShown: false,
         }}
@@ -97,6 +118,17 @@ const HomeDrawerScreen = () => {
 export default (props) => {
   const [isLoading, setLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
+
+  useEffect(() => {
+    try {
+      const value =  AsyncStorage.getItem('giftingTreeSSoToken')
+      if (value !== null) {
+        setUserToken('asdf');
+      } 
+    } catch (e) {
+      setUserToken(null);
+    }
+  }, [])
 
   const authContext = React.useMemo(() => {
     return {

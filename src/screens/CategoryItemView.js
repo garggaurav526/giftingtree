@@ -10,20 +10,21 @@ import photoFrame1 from '../assets/img/frame1.jpg'
 import photoFrame2 from '../assets/img/frame2.jpg'
 import photoFrame3 from '../assets/img/frame3.jpg'
 import photoFrame4 from '../assets/img/frame4.jpg'
-
 import ImageSliderComponent from "../components/ImageSlider/ImageSliderComponent";
-// import { HomeServices } from "../components/Services/Home.services";
 import BackgroundHeading from '../components/BackgroundHeading';
 import BottomBar from "../components/BottomBar";
 import Header from "../components/Header";
+import { HomeServices } from "../components/Services/Home.services";
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
 const vh = Dimensions.get('window').height / 100
     ;
-// const homeServices = new HomeServices()
+const homeServices = new HomeServices()
 
 function CategoryItemView(props) {
+    const [categoryId, setCategoryId] = React.useState("")
+    const [subCategoryList, setSubCategoryList] = React.useState([])
     const [categoryName, setCategoryName] = React.useState("")
 
     useEffect(() => {
@@ -32,11 +33,12 @@ function CategoryItemView(props) {
 
     var getDataAlert = async () => {
         try {
-            const value = await props.navigation.getParam("navigationData");
-            console.log(value)
-            if (value.categoryName !== null) {
+            const value = await props.route.params.navigationData
+            console.log("valuereeeee", value)
+            if (value.categoryId !== null) {
+                setCategoryId(value.categoryId)
                 setCategoryName(value.categoryName)
-                // getCategoryItemList(value.categoryName)
+                getSubCategoryList(value.categoryId)
             }
         } catch (e) {
             // error reading value
@@ -74,15 +76,15 @@ function CategoryItemView(props) {
         }
     ]
 
-    const getCategoryItemList = async () => {
-        // await homeServices.getCategoryItemList().then(
-        //     (data) => {
-        //         // setAppData(data)
-        //     },
-        //     (error) => {
-        //         console.log("error.response.status", error);
-        //     }
-        // );
+    const getSubCategoryList = async (id) => {
+        await homeServices.getSubCategoryList(id).then(
+            (data) => {
+                setSubCategoryList(data.data.data)
+            },
+            (error) => {
+                console.log("error.response.status", error);
+            }
+        );
     }
 
     const handleClickOnSubCategory = (id) => {
@@ -108,13 +110,15 @@ function CategoryItemView(props) {
                             />
                             <View style={styles.row}>
                                 {
-                                    subCategoryImage.length > 0 &&
-                                    subCategoryImage.map((item, i) => {
+                                    subCategoryList.length > 0 &&
+                                    subCategoryList.map((item, i) => {
                                         return <>
                                             <View style={styles.col}>
-                                                <Text style={styles.subCategorystyle}>{item.subCatgoryName}</Text>
+                                                <Text style={styles.subCategorystyle}>{item.name}</Text>
                                                 <TouchableOpacity onPress={() => handleClickOnSubCategory(item.id)}>
-                                                    <Image source={item.image} style={styles.subCategoryImg} />
+                                                    <View style={styles.imgaeParent}>
+                                                        <Image source={{uri:item.image}} style={styles.subCategoryImg} />
+                                                    </View>
                                                 </TouchableOpacity>
                                             </View>
                                         </>
@@ -170,12 +174,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: '100%',
         height: 300,
-        resizeMode: "stretch",
+        resizeMode: "cover",
         alignSelf: 'center',
     },
     subCategorystyle: {
         fontWeight: "bold",
         fontSize: RFPercentage(2),
         marginBottom: 10
+    },
+    imgaeParent: {
+        width: vw * 98
     }
 });

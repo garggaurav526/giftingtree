@@ -5,7 +5,7 @@ export default function CustomButton(props) {
     return (
         <View>
             <TouchableOpacity onPress={() => props.enabled ? props.btnAction() : null}  >
-                <Text style={[styles.btn,props.btnStyle]}>{props.text}</Text>
+                <Text style={[styles.btn,props.btnStyle,{marginTop: props.marginTop == "none" ? 0: 20}]}>{props.text}</Text>
             </TouchableOpacity>
         </View>
     )
@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
         padding: 15,
         color: "#fff",
         borderRadius: 10,
-        marginTop: 20,
         textAlign: "center"
     }
 })
