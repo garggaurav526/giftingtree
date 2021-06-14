@@ -34,9 +34,9 @@ export default function BottomBar(props) {
                         <Text style={{textAlign: "center",color:props.active=="Wishlist"?'#00BFA5':'#000'}}>Wishlist</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={()=>navigateSceen('Home')} style={styles.iconBox}>
-                        <Icon name={props.active  ==="Cart" ? "ios-cart" :"ios-cart-outline" } size={30} style={{textAlign:'center'}} color={props.active=="Cart"?'#00BFA5':'#000'} />
-                        <Text style={{textAlign: "center",color:props.active=="Cart"?'#00BFA5':'#000'}}>Cart</Text>
+                    <TouchableOpacity onPress={()=>navigateSceen('Card')} style={styles.iconBox}>
+                        <Icon name={props.active  ==="Card" ? "ios-cart" :"ios-cart-outline" } size={30} style={{textAlign:'center'}} color={props.active=="Card"?'#00BFA5':'#000'} />
+                        <Text style={{textAlign: "center",color:props.active=="Card"?'#00BFA5':'#000'}}>Cart</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={()=>navigateSceen('UserProfile')} style={styles.iconBox}>

@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/dist/Ionicons';
 import ImageSliderComponent from "../components/ImageSlider/ImageSliderComponent";
 import { HomeServices } from "../components/Services/Home.services";
 import RatingComponent from "../components/RatingComponent";
+import { AuthContext } from "../components/Context";
 
 const { width, height } = Dimensions.get('window');
 const vw = Dimensions.get('window').width / 100;
@@ -19,6 +20,7 @@ function ProductDetail(props) {
     const [productId, setProductId] = React.useState()
     const [wishlistActive, setWishlistActive] = React.useState(false)
     const [distinctRating, setDistinctRating] = React.useState({})
+    const { cardProductItem } = React.useContext(AuthContext)
 
     useEffect(() => {
         getDataAlert()
@@ -87,6 +89,12 @@ function ProductDetail(props) {
                 }
             );
         }
+    }
+
+    const handleAddToCard = async() => {
+        console.log("hdfkjshjfhskdf", productDetail)
+       await cardProductItem(productDetail)
+        
     }
 
     return (<>
@@ -175,6 +183,7 @@ function ProductDetail(props) {
             </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.btn, { backgroundColor: "#00BFA5", color: "#fff" }]}
+                onPress={handleAddToCard}
 
             >
                 <Icon name={isActiveBtn === "Cart" ? "ios-cart" : "ios-cart-outline"} size={30} style={isActiveBtn === "Cart" ? { color: "#fff" } : { color: "#000" }} />

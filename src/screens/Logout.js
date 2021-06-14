@@ -8,12 +8,19 @@ import {
 	DrawerItemList,
 	DrawerItem,
 } from '@react-navigation/drawer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function Logout(props) {
 	const { signOut } = React.useContext(AuthContext)
-	const handleSignOut = () => {
-		signOut()
+	const handleSignOut = async() => {
+		try {
+			await AsyncStorage.removeItem("giftingTreeSSoToken");
+			signOut()
+		} catch (e) {
+			// setErrorMesg("Something went wrong !!! ")
+			// saving error
+		}
 	}
 
 	return (

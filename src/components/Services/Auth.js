@@ -17,7 +17,8 @@ function userLogin(email, password) {
         body: formdata,
         redirect: 'follow'
     };
-    return fetch(apiUrl+"api/auth/login", requestOptions)
+    console.log("shjgasdgasjd", apiUrl)
+    return fetch(apiUrl+"auth/login", requestOptions)
         .then(handleResponse)
         .then(user => {
             return user;

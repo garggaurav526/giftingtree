@@ -36,6 +36,7 @@ export default function Login({ navigation }) {
 
                 authServices.userLogin(emailOrPhone, password)
                     .then(async (data) => {
+                        console.log("sdakjashdjahsd", data)
                         if (data.data.success) {
                             setIasLoader(false);
                             if (data.data.data.access_token ) {
@@ -55,7 +56,7 @@ export default function Login({ navigation }) {
                     })
                     .catch(function (error) {
                         setIasLoader(false);
-                        console.log(error);
+                        console.log("errorerror", error);
                     });
             // }else{
             //     setErrorPassword("Please enter atleast 6 digit")

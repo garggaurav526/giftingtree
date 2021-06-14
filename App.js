@@ -24,6 +24,8 @@ import Logout from './src/screens/Logout';
 import WishList from './src/screens/WishList';
 import UserProfile from './src/screens/UserProfile';
 import EditProfile from './src/screens/EditProfile';
+import Card from './src/screens/Card';
+import Checkout from './src/screens/Checkout';
 
 
 const { width, height } = Dimensions.get('window');
@@ -78,6 +80,12 @@ const HomeStackScreen = () => {
         }}
       />
       <HomeStack.Screen
+        name="Card" component={Card}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
         name="ProductListing" component={ProductListing}
         options={{
           headerShown: false,
@@ -91,6 +99,12 @@ const HomeStackScreen = () => {
       />
       <HomeStack.Screen
         name="EditProfile" component={EditProfile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="Checkout" component={Checkout}
         options={{
           headerShown: false,
         }}
@@ -121,10 +135,10 @@ export default (props) => {
 
   useEffect(() => {
     try {
-      const value =  AsyncStorage.getItem('giftingTreeSSoToken')
+      const value = AsyncStorage.getItem('giftingTreeSSoToken')
       if (value !== null) {
         setUserToken('asdf');
-      } 
+      }
     } catch (e) {
       setUserToken(null);
     }
@@ -143,6 +157,82 @@ export default (props) => {
       signOut: () => {
         setLoading(false);
         setUserToken(null);
+      },
+      cardProductItem: async (val) => {
+        var productList = []
+        try {
+          var getProduct = await AsyncStorage.getItem("__gifting_tree_cart_item");
+          var cartData = getProduct && JSON.parse(getProduct);
+          var flag = true;
+          if (cartData && cartData.length) {
+            cartData.map(async (item, i) => {
+              if (item.id == val.id) {
+                item.quantity = item.quantity + 1;
+                flag = false;
+                try {
+                  await AsyncStorage.setItem("__gifting_tree_cart_item", JSON.stringify(cartData));
+                } catch (e) {
+                  console.log("unable to set data !!! ")
+                  // saving error
+                }
+              }
+              if (i == cartData.length - 1) {
+                if (flag) {
+                  var product = { ...val, quantity: 1 };
+                  cartData.push(product);
+                  try {
+                    await AsyncStorage.setItem("__gifting_tree_cart_item", JSON.stringify(cartData));
+                  } catch (e) {
+                    console.log("unable to set data !!! ")
+                    // saving error
+                  }
+                }
+              }
+            })
+          } else {
+            var product = { ...val, quantity: 1 };
+            productList.push(product);
+            try {
+              await AsyncStorage.setItem("__gifting_tree_cart_item", JSON.stringify(productList));
+            } catch (e) {
+              console.log("unable to set data !!! ")
+              // saving error
+            }
+          }
+        } catch (e) {
+          console.log("Cant get item!!! ")
+        }
+      },
+      removeCartProductItem: async (val) => {
+        try {
+          var getProduct = await AsyncStorage.getItem("__gifting_tree_cart_item");
+          var cartData = getProduct && JSON.parse(getProduct);
+          if (cartData && cartData.length) {
+            cartData.map(async (item, i) => {
+              if (item.id == val.id) {
+                if (item.quantity > 1) {
+                  item.quantity = item.quantity - 1;
+                  try {
+                    await AsyncStorage.setItem("__gifting_tree_cart_item", JSON.stringify(cartData));
+                  } catch (e) {
+                    console.log("unable to set data !!! ")
+                    // saving error
+                  }
+                } else {
+                  cartData.splice(i, 1);
+                  try {
+                    await AsyncStorage.setItem("__gifting_tree_cart_item", JSON.stringify(cartData));
+                  } catch (e) {
+                    console.log("unable to set data !!! ")
+                    // saving error
+                  }
+                }
+              }
+            })
+          }
+        } catch (e) {
+          console.log("Cant get item!!! ")
+        }
       }
     }
   }, []);
